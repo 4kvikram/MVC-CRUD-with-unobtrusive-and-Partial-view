@@ -1,0 +1,198 @@
+﻿@{
+
+    Layout = "_ApplicationLayout";
+}
+<div>
+    <button type="button"
+            class="btn btn-primary addempbtn"
+            data-toggle="modal"
+            data-target="#MdlEditEmployee"
+            id="btnAddModel">
+        Add Employee
+    </button>
+</div>
+
+<div id="EmployeeList">
+    <partial name="_ListEmployees" />
+
+</div>
+
+<div class="modal fade" id="MdlEditEmployee" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    @{
+        EmployeeViewModel employeeViewModel = new EmployeeViewModel();
+    }
+    <partial name="_EditEmployee" model="employeeViewModel" />
+</div>
+
+<script>
+    var EmployeeClassFields = ["YearsExperience", "SkillId", "PhoneNumber", "EmployeeName", "EmployeeId"];
+
+    $(document).ready(function () {
+        $('#btnAddModel').click(function () {
+            $(".reset").click();
+        });
+    });
+    //function LoadEditEmployeeModel(id=0)
+    //{
+    //    $('#EmployeeList').();
+    //}
+
+
+    $(".reset").click(function () {
+        $(this).closest('form').find("input[type=text], textarea").val("");
+        $(this).closest('form').find("input[type=number]").val("");
+        $(this).closest('form').find("input[type=password]").val("");
+    });
+
+
+    var EmployeeSave = function () {
+
+        var msgsuccs = 1;
+        var msg = "Employee Saved Successfully";
+        if (msgsuccs == 1) {
+
+            $.notify(msg, "success");
+        }
+        else {
+            //showNotification(false, msg);
+            $.notify(msg, "error");
+        }
+        $("#MdlEditEmployee").modal('hide');
+        $(".show").removeClass("modal-backdrop");
+        $("body").removeClass("modal-open");
+    }
+
+    function SetEmployeeEditForm(EmpId) {
+        $("#MdlEditEmployee").load('@Url.Action("GetEmployee", "Employee")?EmpId=' + EmpId);
+
+        //$('#MdlEditEmployee').modal('show');
+    }
+
+
+ 
+
+
+    function IsFormValid(InputFields) {
+        var msg = "";
+        for (var i = 0; i < InputFields.length; i++) {
+            var isAllreadyError = false;
+            if ($(`#${InputFields[i]}[data-val-required]`).length > 0) {
+                var d = $(`#${InputFields[i]}`).attr("data-val-required");
+                if ($(`#${InputFields[i]}`).val().length == 0) {
+                    msg = msg + d;
+                    isAllreadyError = true;
+                    $(`span[data-valmsg-for='${InputFields[i]}']`).html(d);
+
+                }
+                else {
+                    if (!isAllreadyError) {
+                        $(`span[data-valmsg-for='${InputFields[i]}']`).html("");
+                    }
+                }
+            }
+            //check regx
+
+            if ($(`#${InputFields[i]}[data-val-regex]`).length > 0) {
+                if ($(`#${InputFields[i]}`).val().length > 0) {
+                    // debugger;
+                    var d = $(`#${InputFields[i]}`).attr("data-val-regex");
+
+                    var txvalue = $(`#${InputFields[i]}`).val()
+                    var reg = $(`#${InputFields[i]}`).attr("data-val-regex-pattern");
+                    var isvaltrue = matchExact(reg, txvalue);
+                    if (!isvaltrue) {
+                        //console.log(d);
+                        msg = msg + d;
+                        isAllreadyError = true;
+                        $(`span[data-valmsg-for='${InputFields[i]}']`).html(d);
+
+                    }
+                    else {
+                        if (!isAllreadyError) {
+                            $(`span[data-valmsg-for='${InputFields[i]}']`).html("");
+                        }
+                    }
+                }
+            }
+
+            if (($(`#${InputFields[i]}[data-val-minlength]`).length) > 0 && ($(`#${InputFields[i]}[data-val-maxlength]`).length)) {
+
+                var min = parseFloat($(`#${InputFields[i]}`).attr("data-val-minlength-min"));
+                var max = parseFloat($(`#${InputFields[i]}`).attr("data-val-maxlength-max"));
+                var value = $(`#${InputFields[i]}`).val();
+                if (value != undefined) {
+                    if (value.length > max) {
+                        var d = $(`#${InputFields[i]}`).attr("data-val-maxlength");
+                        $(`span[data-valmsg-for='${InputFields[i]}']`).html(d);
+                        msg = msg + d;
+                        isAllreadyError = true;
+                    }
+                    else {
+                        if (!isAllreadyError) {
+                            $(`span[data-valmsg-for='${InputFields[i]}']`).html("");
+                        }
+                    }
+                    if (value.length < min) {
+                        var d = $(`#${InputFields[i]}`).attr("data-val-minlength");
+                        $(`span[data-valmsg-for='${InputFields[i]}']`).html(d);
+                        msg = msg + d;
+                        isAllreadyError = true;
+                    }
+                    else {
+                        if (!isAllreadyError) {
+                            $(`span[data-valmsg-for='${InputFields[i]}']`).html("");
+                        }
+                    }
+                }
+            }
+
+            if ($(`#${InputFields[i]}[data-val-minlength]`).length > 0) {
+                var min = parseFloat($(`#${InputFields[i]}`).attr("data-val-minlength-min"));
+                var value = $(`#${InputFields[i]}`).val();
+                if (value != undefined) {
+                    if (value.length < min) {
+                        var d = $(`#${InputFields[i]}`).attr("data-val-minlength");
+                        $(`span[data-valmsg-for='${InputFields[i]}']`).html(d);
+                        msg = msg + d;
+                        isAllreadyError = true;
+                    }
+                    else {
+                        if (!isAllreadyError) {
+                            $(`span[data-valmsg-for='${InputFields[i]}']`).html("");
+                        }
+                    }
+                }
+            }
+
+            //chedk  max length
+            if ($(`#${InputFields[i]}[data-val-maxlength]`).length > 0) {
+                var max = parseFloat($(`#${InputFields[i]}`).attr("data-val-maxlength-max"));
+                var value = $(`#${InputFields[i]}`).val();
+                if (value != undefined) {
+                    if (value.length > max) {
+                        var d = $(`#${InputFields[i]}`).attr("data-val-maxlength");
+                        $(`span[data-valmsg-for='${InputFields[i]}']`).html(d);
+                        msg = msg + d;
+                        isAllreadyError = true;
+                    }
+                    else {
+                        if (!isAllreadyError) {
+                            $(`span[data-valmsg-for='${InputFields[i]}']`).html("");
+                        }
+                    }
+                }
+            }
+        }
+        //console.log(msg);
+        if (msg.length == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    function matchExact(re, str) {
+        var r = new RegExp(re);
+        var match = str.match(r);
+        return match && str === match[0];
+    }
+</script>

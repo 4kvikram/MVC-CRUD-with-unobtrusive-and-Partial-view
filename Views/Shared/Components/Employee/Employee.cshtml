@@ -1,0 +1,49 @@
+﻿@model List<EmployeeViewModel>
+
+<div>
+    <table id="EmployeeTbl">
+        <thead>
+            <tr>
+                <th>EmployeeId</th>
+                <th>EmployeeName</th>
+                <th>SkillId</th>
+                <th>YearsExperience</th>
+                <th>Menu</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.EmployeeId</td>
+                    <td>@item.EmployeeName</td>
+                    <td>@item.SkillId</td>
+                    <td>@item.YearsExperience</td>
+                    <td>
+                        <a 
+                           class="db-list" 
+                           onclick="SetEmployeeEditForm(@item.EmployeeId);"
+                           data-toggle="modal"
+                            data-target="#MdlEditEmployee"
+                           >
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <a data-ajax="true"
+                           data-ajax-confirm="Are you sure to delete?"
+                           data-ajax-url='@Url.Action("DeleteDriver", "driver")?ItemId=@item.EmployeeId'
+                           data-ajax-update="#_ListEmployees"
+                           data-ajax-complete="EmployeeSave">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#EmployeeTbl').DataTable();
+    });
+</script>

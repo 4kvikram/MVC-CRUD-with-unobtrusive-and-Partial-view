@@ -1,0 +1,14 @@
+﻿EntityFrameworkCore
+
+EntityFrameworkCore.Design
+
+EntityFrameworkCore.Tools
+
+EntityFrameworkCore.SqlServer
+
+// to migrate model from database
+Scaffold-DbContext "Server=LAPTOP-UM0B5HOM;Database=DemoCICD;MultipleActiveResultSets=true;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir DBModels -Context "ApplicationContext"
+
+//to update model from database
+Scaffold-DbContext "Server=CLAPTOP-UM0B5HOM;Database=DemoCICD;MultipleActiveResultSets=true;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir DBModels -Context "ApplicationContext" -force
+
